@@ -29,7 +29,7 @@ jobs:
           npm run test --if-present
       working-directory: client
 
-     - name: Copy static files & delete sources
+    - name: Copy static files & delete sources
       run: |
           ls -a
           mkdir -p server/public/
@@ -48,4 +48,4 @@ jobs:
       with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}} # Will create app if one does not exist yet with this name
-          heroku_email: ${{secrets.HEROKU_APP_EMAIL}} # The email that you use to log in to Heroku
+          heroku_email: ${{secrets.HEROKU_APP_NAME}} # The email that you use to log in to Heroku
