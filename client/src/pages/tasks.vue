@@ -22,7 +22,8 @@ export default {
 	  notDoneTasks : [],
 	  currentTab: tabs[0],
 	  modalState : false,
-	  users : ["Nah","dad"]
+	  users : [],
+	  userss : [],
     }
   },
   methods : {
@@ -51,6 +52,27 @@ export default {
 	async changeTab(tab) {
 		this.currentTab = tab;
 		await this.getTasks();
+	},
+
+	async fetchUsersForAutoComplete(){
+		if(this.taskFor === ""){
+			console.log("EMPRTs");
+			this.userss = [];
+		}
+		else {
+			const { data, status } = await axios.get(
+				`http://localhost:5000/api/users/search?name=${this.taskFor}`,
+				{
+					headers: {
+					'x-auth-token': this.token,
+					},
+				},
+			);
+
+			if(status >= 200 && status < 300){
+				this.userss = data.map(u => u.userName);
+			}
+		}
 	},
 
 	async deleteTask(task){
@@ -162,6 +184,10 @@ export default {
 		}
 	},
 
+	changeUsersToFetch(){
+		console.log(this.taskFor);
+	},
+
 	async addTask () {
 		if(!this.username) return;
 		const taskToCreate = {
@@ -207,14 +233,20 @@ export default {
 					<div class="dropdown-trigger">
 						<div class="field">
 							<div class="control">
-								<input class="input is-normal" type="search	" placeholder="For" v-model="taskFor" />
+								<input 
+									class="input is-normal" 
+									type="search	
+									" placeholder="For" 
+									v-model="taskFor" 
+									v-on:input="fetchUsersForAutoComplete"
+								/>
 							</div>
 						</div>
 					</div>
 					<div class="dropdown-menu" id="dropdown-menu" role="menu">
 						<div class="dropdown-content">
 								<a href="#" class="dropdown-item" 
-									v-for="user in users" @click="()=>taskFor=user">
+									v-for="user in userss" @click="()=>taskFor=user">
 									{{user}}
 								</a>
 						</div>
@@ -593,45 +625,3 @@ nav {
 	width: 100%;
 }
 </style>
-
-
-<!-- 
-<template>
-<div class="wrapper">
-  <div class="content">
-    <div class="title">
-      <h1>{{title}}</h1>
-	  <button @click="getTasks()">GET TASKS</button>
-    </div>
-  </div>
-</div>
-</template>
-
-<script>
-
-import axios from 'axios'
-export default {
-  data () {
-    return {
-      title : null
-    }
-  },
-  methods : {
-	async getTasks () {
-		const { data, status }= await axios.get(
-			`http://localhost:5000/api/tasks`,
-			{
-				headers: {
-				'x-auth-token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjcwZjc3MDg4YjIxYWVlMTdjMzM5MWIiLCJ1c2VyTmFtZSI6Ik5haG9tIiwiaWF0IjoxNjUxNTgwMDgzfQ.bf46NbP8lAq9Pr_IAdAGFe8CtIEAlRnXahci0aLwcuA",
-				},
-			}
-		);
-		this.title=data[0].title;
-	}
-  },
-  async created () {
-    
-  }
-}
-</script>
--->
